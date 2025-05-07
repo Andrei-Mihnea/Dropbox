@@ -1,0 +1,19 @@
+Proiect IP idei
+
+P7. Tema proiectului: Dropbox 
+Descriere: Proiectul își propune crearea unei aplicații cu funcționalități similare unui 
+serviciu de tip Google Drive/Dropbox. Aplicația urmărește să ofere posibilitatea utilizatorilor 
+înregistrați de a stoca, accesa și distribui cu alți utilizatori înregistrați fișiere proprii, păstrate pe o 
+mașină server. Proiectul va fi de tip server-clienti, scris în C# și conectat cu baze de date Oracle. 
+Partea de client a aplicației va avea interfața grafică dezvoltată cu WPF.
+
+
+
+P9. Tema proiectului: MP3 Player 
+Descriere: O aplicatie care va reda fisiere media in format mp3. Va fi constituita dintr-o 
+interfata grafica interactiva ce va permite controlul atat a melodiei curente (Play, Pause, Stop), cat si 
+a playlist-ului incarcat (Next, Previous, Remove Song). Utilizatorul va avea posibilitatea de a crea 
+noi liste de redare, de a cauta in playlist-ul curent si de a adauga melodii cu drag and drop. 
+
+parola db
+ip2025

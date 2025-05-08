@@ -11,7 +11,8 @@ namespace DataAccess
 {
     public class UserRepository
     {
-        private readonly string _ConnectionString = "User Id=dropbox;Password=ip2025;Data Source=localhost:XEPDB1";
+        private readonly string _ConnectionString = "User Id=dropbox;Password=ip2025;Data Source=localhost:1521/XEPDB1;"
+;
         public User GetUserByUsername(string username)
         {
             try
@@ -42,7 +43,7 @@ namespace DataAccess
             }
             catch (OracleException ex)
             {
-                throw new ApplicationException("Eroare la accesarea bazei de date.", ex);
+                throw new ApplicationException($"Eroare la accesarea bazei de date.(1) ", ex);
             }
         }
 
@@ -64,7 +65,7 @@ namespace DataAccess
             }
             catch (OracleException ex)
             {
-                throw new ApplicationException("Eroare la accesarea bazei de date.", ex);
+                throw new ApplicationException($"Eroare la accesarea bazei de date.(2) {ex.Message}", ex);
             }
         }
     }

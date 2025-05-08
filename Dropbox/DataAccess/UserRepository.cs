@@ -11,7 +11,7 @@ namespace DataAccess
 {
     public class UserRepository
     {
-        private readonly string _ConnectionString = "User Id=dropbox;Password=dropbox123;Data Source=localhost:XEPDB1";
+        private readonly string _ConnectionString = "User Id=dropbox;Password=ip2025;Data Source=localhost:XEPDB1";
         public User GetUserByUsername(string username)
         {
             try
@@ -39,7 +39,30 @@ namespace DataAccess
                 }
 
                 return null;
-            } catch(OracleException ex)
+            }
+            catch (OracleException ex)
+            {
+                throw new ApplicationException("Eroare la accesarea bazei de date.", ex);
+            }
+        }
+
+        public void InsertUser(User user)
+        {
+            try
+            {
+                using (var conn = new OracleConnection(this._ConnectionString))
+                {
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+
+                    cmd.CommandText = @"INSERT INTO USERS( USERNAME, PASSWORD ) VALUES(:username, :password)";
+                    cmd.Parameters.Add(new OracleParameter("username", user.Username));
+                    cmd.Parameters.Add(new OracleParameter("password", user.PasswordHash));
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (OracleException ex)
             {
                 throw new ApplicationException("Eroare la accesarea bazei de date.", ex);
             }

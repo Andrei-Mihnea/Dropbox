@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using CommonModels;
 using DataAccess;
 
 namespace BusinessLogic
@@ -36,6 +37,20 @@ namespace BusinessLogic
             return true;
         }
 
+        public void Register(string username, string password)
+        {
+            var user = _repo.GetUserByUsername(username);
+
+            if (user != null) throw new Exception("Utilizatorul exista deja");
+
+            var newUser = new User
+            {
+                Username = username,
+                PasswordHash = HashPassword(password)
+            };
+
+            _repo.InsertUser(newUser);
+        }
 
         private string HashPassword(string password)
         {

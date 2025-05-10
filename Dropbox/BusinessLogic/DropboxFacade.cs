@@ -16,7 +16,6 @@ namespace BusinessLogic
         {
             return _authManager.Login(username, password);
         }
-
         public void Register(string username, string password) 
         {
             _authManager.Register(username, password);

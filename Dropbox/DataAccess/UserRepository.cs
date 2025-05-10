@@ -1,23 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.OracleClient;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using CommonModels;
+using Oracle.ManagedDataAccess.Client;
 
 namespace DataAccess
 {
     public class UserRepository
     {
-        private readonly string _ConnectionString = "User Id=dropbox;Password=ip2025;Data Source=localhost:1521/XEPDB1;"
-;
+
         public User GetUserByUsername(string username)
         {
             try
             {
-                using (var conn = new OracleConnection(_ConnectionString))
+                using (var conn = OracleConnectionHelper.GetConnection())
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
@@ -51,7 +45,7 @@ namespace DataAccess
         {
             try
             {
-                using (var conn = new OracleConnection(this._ConnectionString))
+                using (var conn = OracleConnectionHelper.GetConnection())
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();

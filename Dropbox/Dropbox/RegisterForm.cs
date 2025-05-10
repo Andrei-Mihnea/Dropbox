@@ -18,31 +18,6 @@ namespace Dropbox
             InitializeComponent();
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void password_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void username_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void Register_Click(object sender, EventArgs e)
         {
             try
@@ -52,10 +27,10 @@ namespace Dropbox
                     var usrname = username.Text;
                     var pwdname = password.Text;
 
-                    DropboxFacade facade = new DropboxFacade();
-                    facade.Register(usrname, pwdname);
+                    DropboxFacade dropbox = new DropboxFacade();
+                    dropbox.Register(usrname, pwdname);
 
-                    MessageBox.Show($"Înregistrare efecutată cu succes");
+                    MessageBox.Show("Înregistrare efecutată cu succes");
                 }
                 else
                 {

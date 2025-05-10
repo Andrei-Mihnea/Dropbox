@@ -29,7 +29,9 @@ namespace BusinessLogic
                 throw new UnauthorizedAccessException("Utilizator inexistent");
             }
 
-            if(user.PasswordHash == HashPassword(password))
+            
+
+            if(user.PasswordHash != HashPassword(password))
             {
                 throw new UnauthorizedAccessException("Parolă incorectă");
             }

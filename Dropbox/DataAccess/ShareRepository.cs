@@ -24,8 +24,8 @@ namespace DataAccess
 
                     cmd.CommandText = @"INSERT INTO SHAREDFILES(FILE_ID, SHAREDWITHUSER_ID) VALUES(:fileId, :shareId)";
 
-                    cmd.Parameters.Add(new OracleParameter(":fileId",share.FileId));
-                    cmd.Parameters.Add(new OracleParameter(":shareId", share.SharedWithUserId));
+                    cmd.Parameters.Add(new OracleParameter("fileId",share.FileId));
+                    cmd.Parameters.Add(new OracleParameter("shareId", share.SharedWithUserId));
 
                     cmd.ExecuteNonQuery();
                 }
@@ -50,7 +50,7 @@ namespace DataAccess
                     cmd.CommandText = @"SELECT f.ID, f.FILENAME, f.FILEPATH, f.UPLOADED_AT FROM FILES f
                                         JOIN SHARED_FILES s ON f.ID = s.FILE_ID WHERE s.SHARED_WITH_USER_ID = :user_id";
 
-                    cmd.Parameters.Add(":user_id", userId);
+                    cmd.Parameters.Add("user_id", userId);
 
                     using(var outputFile = cmd.ExecuteReader())
                     {

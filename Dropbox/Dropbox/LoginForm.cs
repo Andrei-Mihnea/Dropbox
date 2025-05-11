@@ -8,11 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BusinessLogic;
+using CommonModels;
 
 namespace Dropbox
 {
     public partial class LoginForm : Form
     {
+        DropboxFacade _facade = new DropboxFacade();
+        public User LoggedInUser {  get; private set; }
         public LoginForm()
         {
             InitializeComponent();
@@ -22,14 +25,19 @@ namespace Dropbox
         {
             try
             {
-                DropboxFacade dropbox = new DropboxFacade();
-
                 var username = numeUtilizator.Text;
                 var password = parola.Text;
-
-                dropbox.Login(username, password);
+               
+                var user = _facade.Login(username, password);
+                LoggedInUser = user;
+                this.DialogResult = DialogResult.OK;
 
                 MessageBox.Show("Logarea a fost realizata cu succes");
+
+                //DropboxForm dropboxForm = new DropboxForm(user);
+                //dropboxForm.Show();
+                //this.Hide();
+                
             }
             catch (Exception ex)
             {

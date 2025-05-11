@@ -13,6 +13,7 @@ namespace Dropbox
 {
     public partial class RegisterForm : Form
     {
+        DropboxFacade _facade = new DropboxFacade();
         public RegisterForm()
         {
             InitializeComponent();
@@ -27,8 +28,8 @@ namespace Dropbox
                     var usrname = username.Text;
                     var pwdname = password.Text;
 
-                    DropboxFacade dropbox = new DropboxFacade();
-                    dropbox.Register(usrname, pwdname);
+
+                    _facade.Register(usrname, pwdname);
 
                     MessageBox.Show("Înregistrare efecutată cu succes");
                 }

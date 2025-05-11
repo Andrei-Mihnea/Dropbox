@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CommonModels;
 
 namespace Dropbox
 {
@@ -16,7 +17,16 @@ namespace Dropbox
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new LoginForm());
+
+            using (var loginForm = new LoginForm())
+            {
+                if (loginForm.ShowDialog() == DialogResult.OK)
+                {
+                    
+                    User user = loginForm.LoggedInUser; 
+                    Application.Run(new DropboxForm(user));
+                }
+            }
         }
     }
 }

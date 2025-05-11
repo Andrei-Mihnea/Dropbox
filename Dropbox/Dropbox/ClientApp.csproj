@@ -103,6 +103,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DropboxForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DropboxForm.Designer.cs">
+      <DependentUpon>DropboxForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -117,6 +123,9 @@
     <Compile Include="RegisterForm.Designer.cs">
       <DependentUpon>RegisterForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="DropboxForm.resx">
+      <DependentUpon>DropboxForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>

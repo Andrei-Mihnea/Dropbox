@@ -14,7 +14,7 @@ namespace BusinessLogic
     {
         private readonly UserRepository _repo = new UserRepository();
 
-        public bool Login(string username, string password)
+        public User Login(string username, string password)
         {
 
             if(string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
@@ -36,7 +36,7 @@ namespace BusinessLogic
                 throw new UnauthorizedAccessException("Parolă incorectă");
             }
 
-            return true;
+            return user;
         }
 
         public void Register(string username, string password)

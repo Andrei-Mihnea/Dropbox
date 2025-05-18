@@ -19,16 +19,30 @@ namespace HttpServer
 
             Console.WriteLine("Serverul ruleaza pe http://localhost:8080/");
 
-            while(true)
+            while (true)
             {
                 var context = listener.GetContext();
                 var request = context.Request;
                 var response = context.Response;
-
-                if(request.HttpMethod == "POST" && request.Url.AbsolutePath == "/login")
+                var authHandler = new AuthController();
+                var fileHandler = new FileController();
+                switch (request.HttpMethod)
                 {
-                        var handler = new AuthController();
-                        handler.HandleLogin(context);
+                    case "POST":
+                        switch (request.Url.AbsolutePath)
+                        {
+                            case "/login":
+                                authHandler.HandleLogin(context);
+                                break;
+
+                            case "/register":
+                                authHandler.HandleRegister(context);
+                                break;
+                            case "/upload":
+                                fileHandler.HandleUpload(context);
+                                break;
+                        }
+                        break;
                 }
             }
         }

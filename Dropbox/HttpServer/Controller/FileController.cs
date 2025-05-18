@@ -48,12 +48,61 @@ namespace HttpServer.Controller
 
         public void HandleList(HttpListenerContext context)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using(var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding))
+                {
+                    string body = reader.ReadToEnd();
+
+                    var user = JsonSerializer.Deserialize<UserIdRequest>(body);
+                    var files = _facade.GetUserFiles(user.UserId);
+
+                    string json = JsonSerializer.Serialize(files);
+
+                    context.Response.StatusCode = 200;
+                    context.Response.ContentType = "application/json";
+                    byte[] buffer = Encoding.UTF8.GetBytes(json);
+                    context.Response.OutputStream.Write(buffer,0,buffer.Length);
+                }
+            }
+            catch (Exception ex)
+            { 
+                context.Response.StatusCode= (int)HttpStatusCode.BadRequest;
+                context.Response.ContentType = "application/json";
+                byte[] buffer = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { error = ex.Message }));
+                context.Response.OutputStream.Write (buffer, 0, buffer.Length);
+            }
+
+            context.Response.Close();
+
         }
 
         public void HandleDelete(HttpListenerContext context) 
         {
-           throw new NotImplementedException();
+            try
+            {
+                using(var reader = new StreamReader(context.Request.InputStream,context.Request.ContentEncoding))
+                {
+                    string body = reader.ReadToEnd();
+
+                    var deleteRequest = JsonSerializer.Deserialize<DeleteFileRequest>(body);
+                    _facade.DeleteFile(deleteRequest.FileId);
+
+                    context.Response.StatusCode = 200;
+                    context.Response.ContentType = "application/json";
+                    byte[] buffer = Encoding.UTF8.GetBytes("{\"message\":\"File deleted successfully\"}");
+                    context.Response.OutputStream.Write(buffer,0, buffer.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Response.ContentType = "application/json";
+                byte[] buffer = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { error = ex.Message }));
+                context.Response.OutputStream.Write(buffer,0, buffer.Length);
+            }
+
+            context.Response.Close();
         }
     }
 
@@ -61,5 +110,15 @@ namespace HttpServer.Controller
     {
         public int UserId {  get; set; }
         public string FilePath {  get; set; }
+    }
+
+    public class UserIdRequest
+    {
+        public int UserId { get; set; }
+    }
+
+    public class DeleteFileRequest
+    {
+        public int FileId {  get; set; }
     }
 }

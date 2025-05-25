@@ -20,9 +20,11 @@ namespace BusinessLogic
         public void Register(string username, string password) => _authManager.Register(username, password);
 
         //file saving
-        public void UploadFile(User user, string filepath) => _fileManager.UploadFile(user, filepath);
-        public List<FileItem> GetUserFiles(int userId) => _fileManager.GetFilesForUser(userId);
-        public void DeleteFile(int userId) => _fileManager.DeleteFile(userId);
+        public async Task UploadFile(User user, string filepath) => await _fileManager.UploadFile(user, filepath);
+        public async Task<List<FileItem>> GetUserFiles(int userId) => await _fileManager.GetFilesForUser(userId);
+        public async Task DeleteFile(int userId, string fileName) => await _fileManager.DeleteFile(userId, fileName);
+        public async Task DownloadFile(int userId, string fileName, string destinationPath) => await _fileManager.DownloadFile(userId, fileName, destinationPath);
+
 
         //sharing files 
         public void ShareFile(int fileId, int withUserId) => _shareManager.ShareFile(fileId, withUserId);

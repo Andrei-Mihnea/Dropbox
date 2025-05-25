@@ -39,7 +39,7 @@ namespace Dropbox
 
         private async void initLoad()
         {
-            await LoadUserFilesFromServer();
+            await LoadUserFilesAsync();
         }
         private void DropboxForm_DragEnter(object sender, DragEventArgs e)
         {
@@ -63,24 +63,17 @@ namespace Dropbox
             }
 
             MessageBox.Show("Fișierele au fost încarcate cu succes");
-            await LoadUserFilesFromServer();
+            await LoadUserFilesAsync();
         }
 
-        private async Task LoadUserFilesFromServer()
+        private async Task LoadUserFilesAsync()
         {
-            using (var httpClient = new HttpClient())
+            try
             {
-                var payload = JsonSerializer.Serialize(new {UserId = _currentUser.Id});
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
-
-                var response = await httpClient.PostAsync("http://localhost:8080/list", content);
-                var json = await response.Content.ReadAsStringAsync();
-
-                var files = JsonSerializer.Deserialize<List<FileItem>>(json);
-
+                var files = await _facade.GetUserFiles(_currentUser.Id);
                 listView1.Items.Clear();
 
-                foreach (var file in files)
+                foreach(var file in files)
                 {
                     var item = new ListViewItem(file.FileName);
                     item.SubItems.Add(file.UploadedAt.ToString("g"));
@@ -88,8 +81,10 @@ namespace Dropbox
                     listView1.Items.Add(item);
                 }
             }
-
-
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Eroare la incarcarea fisierelor ${ex.Message}");
+            }
         }
 
         private async Task UploadFileToServer(string filePath)
@@ -116,13 +111,13 @@ namespace Dropbox
 
         }
 
-        private async void ștergeToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void stergeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0)
                 return;
 
             var selectedItem = listView1.SelectedItems[0];
-            var fileId = (int)selectedItem.Tag;
+            string fileName = selectedItem.Text;
 
             var confirm = MessageBox.Show("Sigur dorești să ștergi acest fișier?",
                                           "Confirmare ștergere",
@@ -131,22 +126,26 @@ namespace Dropbox
 
             if (confirm == DialogResult.Yes)
             {
-                await DeleteFileFromServer(fileId);
-                await LoadUserFilesFromServer();
+                await _facade.DeleteFile(_currentUser.Id,fileName);
+                await LoadUserFilesAsync();
             }
         }
 
-        private async Task DeleteFileFromServer(int fileId)
+
+        private async void descarcaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var client = new HttpClient())
+            if (listView1.SelectedItems.Count == 0) return;
+
+            var selectedItem = listView1.SelectedItems[0];
+            string fileName = selectedItem.Text;
+
+            using (SaveFileDialog sfd = new SaveFileDialog { FileName = fileName })
             {
-                var payload = JsonSerializer.Serialize(new { FileId = fileId });
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
-
-                var response = await client.PostAsync("http://localhost:8080/delete", content);
-
-                if (!response.IsSuccessStatusCode)
-                    MessageBox.Show("Ștergerea a eșuat!");
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    await _facade.DownloadFile(_currentUser.Id, fileName, sfd.FileName);
+                    MessageBox.Show("Descarcarea a fost realizata cu succes");
+                }
             }
         }
     }

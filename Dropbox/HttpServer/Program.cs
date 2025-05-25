@@ -41,9 +41,6 @@ namespace HttpServer
                             case "/upload":
                                 fileHandler.HandleUpload(context);
                                 break;
-                            case "/delete":
-                                fileHandler.HandleDelete(context);
-                                break;
                             case "/list":
                                 fileHandler.HandleList(context);
                                 break;

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Oracle.ManagedDataAccess.Client;
 
-namespace DataAccess
+namespace DataAccess    
 {
     public static class OracleConnectionHelper
     {

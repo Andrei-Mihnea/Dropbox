@@ -16,7 +16,6 @@ namespace Dropbox
 {
     public partial class RegisterForm : Form
     {
-        DropboxFacade _facade = new DropboxFacade();
         public RegisterForm()
         {
             InitializeComponent();

@@ -1,34 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using CommonModels;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
 using Oracle.ManagedDataAccess.Client;
 
 namespace DataAccess
 {
     public class FileRepository
     {
-        public void InsertFile(FileItem file)
+        private readonly string _bucketName = "dropbox-961a8.firebasestorage.app";
+        private readonly StorageClient _storageClient;
+
+        public FileRepository()
+        {
+            var credentialPath = @"C:\Users\1\Downloads\dropbox-961a8-firebase-adminsdk-fbsvc-bacbe78e8e.json";
+            var credential = GoogleCredential.FromFile(credentialPath);
+            _storageClient = StorageClient.Create(credential);
+        }
+        public async Task InsertFile(FileItem file)
         {
             try
             {
-                using (var conn = OracleConnectionHelper.GetConnection())
+                using (var stream = new FileStream(file.FilePath, FileMode.Open))
                 {
-                    conn.Open();
-                    var cmd = conn.CreateCommand(); ;
-
-                    cmd.CommandText = @"INSERT INTO FILES ( USER_ID, FILENAME, FILEPATH, UPLOADED_AT ) 
-                                                    VALUES( :userId, :fileName, :filePath, :uploadedAt )";
-
-                    cmd.Parameters.Add(new OracleParameter(":userId", file.UserId));
-                    cmd.Parameters.Add(new OracleParameter(":fileName", file.FileName));
-                    cmd.Parameters.Add(new OracleParameter(":filePath", file.FilePath));
-                    cmd.Parameters.Add(new OracleParameter(":uploadedAt", file.UploadedAt));
-
-                    cmd.ExecuteNonQuery();
+                    await _storageClient.UploadObjectAsync(_bucketName, $"{file.UserId}/{file.FileName}", null, stream);
                 }
             }
             catch (Exception ex)
@@ -38,134 +39,56 @@ namespace DataAccess
 
         }
 
-        public List<FileItem> GetFilesByUserId(int userId)
+        public async Task<List<FileItem>> GetFilesByUserId(int userId)
         {
             List<FileItem> files = new List<FileItem>();
 
             try
             {
-                using(var conn = OracleConnectionHelper.GetConnection())
+                foreach(var obj in _storageClient.ListObjects(_bucketName, $"{userId}/"))
                 {
-                    conn.Open();
-                    var cmd = conn.CreateCommand(); ;
-
-                    cmd.CommandText = @"SELECT ID, USER_ID, FILENAME, FILEPATH, UPLOADED_AT FROM FILES WHERE USER_ID = :userId";
-                    cmd.Parameters.Add(new OracleParameter("userId", userId));
-
-                    using (var file = cmd.ExecuteReader())
+                    files.Add(new FileItem
                     {
-                        while (file.Read())
-                        {
-                            files.Add(new FileItem
-                            {
-                                Id = file.GetInt32(0),
-                                UserId = file.GetInt32(1),
-                                FileName = file.GetString(2),
-                                FilePath = file.GetString(3),
-                                UploadedAt = file.GetDateTime(4)
-                            });
-                        }
-                    }
+                        UserId = userId,
+                        FileName = Path.GetFileName(obj.Name),
+                        FilePath = obj.Name,
+                        UploadedAt = obj.Updated ?? DateTime.Now
+                    }) ; 
                 }
+                return files;
             }
             catch (Exception ex)
             {
                 throw new Exception($"Eroare la extragerea utilizatorilor ({ex.Message})");
-            }
-
-            return files;
+            } 
         }
 
-        public FileItem GetFileById(int fileID)
+        
+
+        public async Task DeleteFile(int userId, string fileName)
         {
             try
             {
-                using (var conn = OracleConnectionHelper.GetConnection())
-                {
-                    conn.Open();
-
-                    var cmd = conn.CreateCommand();
-                    cmd.CommandText = @"SELECT * FROM FILES WHERE ID = :fileID";
-                    cmd.Parameters.Add(new OracleParameter("fileID", fileID));
-
-                    using (var files = cmd.ExecuteReader())
-                    {
-                        while(files.Read())
-                        {
-                            return new FileItem
-                            {
-                                Id = files.GetInt32(0),
-                                UserId = files.GetInt32(1),
-                                FileName = files.GetString(2),
-                                FilePath = files.GetString(3),
-                                UploadedAt = files.GetDateTime(4)
-                            };
-                        }
-                    }
-                }
-                return null;
+                await _storageClient.DeleteObjectAsync(_bucketName, $"{userId}/{fileName}");
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                throw new Exception($"A apărut o eroare în căutarea fișierului ({ex.Message}).");
+                throw new Exception($"Eroare la stergerea fisierului: {ex.Message}");
             }
         }
 
-        public FileItem GetFileByItemAndName(int userId, string fileName)
+        public async Task DownloadFile(int userId, string fileName, string destinationPath)
         {
             try
             {
-                using (var conn = OracleConnectionHelper.GetConnection())
+                using (var outputFile = File.OpenWrite(destinationPath))
                 {
-                    conn.Open();
-                    var cmd = conn.CreateCommand();
-                    cmd.CommandText = @"SELECT * FROM FILES WHERE USER_ID = :userId AND FILENAME = :fileName";
-
-                    cmd.Parameters.Add(new OracleParameter("userId", userId));
-                    cmd.Parameters.Add(new OracleParameter("fileName", fileName));
-
-                    using (var files = cmd.ExecuteReader())
-                    {
-                        if (files.Read())
-                        {
-                            return new FileItem
-                            {
-                                Id = files.GetInt32(0),
-                                UserId = files.GetInt32(1),
-                                FileName = files.GetString(2),
-                                FilePath = files.GetString(3),
-                                UploadedAt = files.GetDateTime(4)
-                            };
-                        }
-
-                    }
-                }
-            }   
-            catch (Exception ex)
-            {
-                throw new Exception($"Eroare la gasirea fisierului.({ex.Message})");
-            }
-            return null;
-        }
-
-        public void DeleteFile(int fileId)
-        {
-            try
-            {
-                using(var conn = OracleConnectionHelper.GetConnection())
-                {
-                    conn.Open();
-
-                    var cmd = conn.CreateCommand();
-                    cmd.CommandText = @"DELETE FROM FILES  WHERE ID = :fileId";
-                    cmd.Parameters.Add(new OracleParameter("fileId", fileId));
-                    cmd.ExecuteNonQuery();
-
+                    await _storageClient.DownloadObjectAsync(_bucketName, $"{userId}/{fileName}", outputFile);
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                throw new Exception($"Eroare la ștergerea fișierului.({ex.Message})");
+                throw new Exception($"Eroare la descarcarea fisierului: {ex.Message} ");
             }
         }
     }

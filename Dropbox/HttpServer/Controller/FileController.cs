@@ -76,7 +76,7 @@ namespace HttpServer.Controller
             context.Response.Close();
 
         }
-
+        /*
         public void HandleDelete(HttpListenerContext context) 
         {
             try
@@ -103,7 +103,7 @@ namespace HttpServer.Controller
             }
 
             context.Response.Close();
-        }
+        }*/
     }
 
     public class UploadRequest

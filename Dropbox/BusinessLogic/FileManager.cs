@@ -13,53 +13,33 @@ namespace BusinessLogic
     {
         private readonly FileRepository _repo = new FileRepository();
 
-        public void UploadFile(User user, string localPath)
+        public async Task UploadFile(User user, string localPath)
         {
             string fileName = Path.GetFileName(localPath);
-            string storagePath = Path.Combine("C:\\DropboxServerData", user.Id.ToString());
-
-            if(!Directory.Exists(storagePath))
-            {
-                Directory.CreateDirectory(storagePath);
-            }
-
-            string destPath = Path.Combine(storagePath, fileName);
-
-            File.Copy(localPath, destPath, overwrite: true);
-
-            var existingFile = _repo.GetFileByItemAndName(user.Id, fileName);
-
-            if (existingFile != null)
-            {
-                _repo.DeleteFile(existingFile.Id);
-            }
 
             var file = new FileItem
             {
                 UserId = user.Id,
                 FileName = fileName,
-                FilePath = destPath,
+                FilePath = localPath,
                 UploadedAt = DateTime.Now
             };
 
-            _repo.InsertFile(file);
+            await _repo.InsertFile(file);
         }
 
-        public List<FileItem> GetFilesForUser(int userId)
+        public async Task<List<FileItem>> GetFilesForUser(int userId)
         {
-            return _repo.GetFilesByUserId(userId);
+            return await _repo.GetFilesByUserId(userId);
         }
-        public void DeleteFile(int fileId)
+        public async Task DeleteFile(int userId, string fileName)
         {
-            var file = _repo.GetFileById(fileId);
-            if (file != null)
-            {
-                if (File.Exists(file.FilePath))
-                {
-                    File.Delete(file.FilePath);
-                }
-                _repo.DeleteFile(fileId);
-            }
+            await _repo.DeleteFile(userId, fileName);
+        }
+
+        public async Task DownloadFile(int userId, string fileName, string destinationPath)
+        {
+            await _repo.DownloadFile(userId, fileName, destinationPath);
         }
 
     }

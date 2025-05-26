@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BusinessLogic;
 using CommonModels;
-
+//Autor implementare metoda Irimescu Dragos-Andrei
 namespace Dropbox
 {
     public partial class LoginForm : Form
@@ -37,14 +37,17 @@ namespace Dropbox
                         Username = username,
                         Password = password,
                     };
-
+                    //serializare credentiale de login
                     string json = JsonSerializer.Serialize(request);
 
+                    //specificare a tipului de continut care trebuie trimis catre server
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+                    //trimitere continut si asteptare primire raspuns de la server
                     var response = await client.PostAsync("http://localhost:8080/login", content);
                     if (response.IsSuccessStatusCode)
                     {
+                        //in cazul de succes suntem trimisi catre pagina principala
                         string result = await response.Content.ReadAsStringAsync();
                         var user = JsonSerializer.Deserialize<User>(result);
                         LoggedInUser = user;

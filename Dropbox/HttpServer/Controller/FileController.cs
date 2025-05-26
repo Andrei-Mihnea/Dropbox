@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using BusinessLogic;
 using CommonModels;
 
+//Autor Mihnea Andrei
 namespace HttpServer.Controller
 {
     public class FileController
@@ -76,34 +77,6 @@ namespace HttpServer.Controller
             context.Response.Close();
 
         }
-        /*
-        public void HandleDelete(HttpListenerContext context) 
-        {
-            try
-            {
-                using(var reader = new StreamReader(context.Request.InputStream,context.Request.ContentEncoding))
-                {
-                    string body = reader.ReadToEnd();
-
-                    var deleteRequest = JsonSerializer.Deserialize<DeleteFileRequest>(body);
-                    _facade.DeleteFile(deleteRequest.FileId);
-
-                    context.Response.StatusCode = 200;
-                    context.Response.ContentType = "application/json";
-                    byte[] buffer = Encoding.UTF8.GetBytes("{\"message\":\"File deleted successfully\"}");
-                    context.Response.OutputStream.Write(buffer,0, buffer.Length);
-                }
-            }
-            catch (Exception ex)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                context.Response.ContentType = "application/json";
-                byte[] buffer = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { error = ex.Message }));
-                context.Response.OutputStream.Write(buffer,0, buffer.Length);
-            }
-
-            context.Response.Close();
-        }*/
     }
 
     public class UploadRequest

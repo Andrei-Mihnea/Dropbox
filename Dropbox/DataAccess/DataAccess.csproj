@@ -136,7 +136,6 @@
   <ItemGroup>
     <Compile Include="FileRepository.cs" />
     <Compile Include="OracleConnectionHelper.cs" />
-    <Compile Include="ShareRepository.cs" />
     <Compile Include="UserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

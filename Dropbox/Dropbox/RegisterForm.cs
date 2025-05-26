@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BusinessLogic;
 
+//Autor Ionescu Vlad-Gabriel
 namespace Dropbox
 {
     public partial class RegisterForm : Form
@@ -37,14 +38,15 @@ namespace Dropbox
                             Username = usrname,
                             Password = pwdname,
                         };
-
+                        //serializare a informatiilor in format json
                         string json = JsonSerializer.Serialize(request);
                         var content = new StringContent(json, Encoding.UTF8, "application/json");
-
+                        //trimitere continut si asteptare primire raspuns de la server
                         var response = await httpClient.PostAsync("http://localhost:8080/register", content);
 
                         if (response.IsSuccessStatusCode)
                         {
+                            //in cazul de succes suntem trimisi catre pagina principala
                             MessageBox.Show("Înregistrare efecutată cu succes");
                             this.Close();
                         }

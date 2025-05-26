@@ -13,6 +13,8 @@ using System.Windows.Forms;
 using BusinessLogic;
 using CommonModels;
 
+
+//Autor implementare interfata Irimescu Dragos Andrei
 namespace Dropbox
 {
     public partial class DropboxForm : Form
@@ -22,11 +24,15 @@ namespace Dropbox
         public DropboxForm(User user)
         {
             InitializeComponent();
+
+            //initializare listView pentru un display mai organizat
             listView1.ContextMenuStrip = contextMenuStrip;
             listView1.Columns.Add("Nume fișier", 200);
             listView1.Columns.Add("Data încărcării", 150);
             _currentUser = user;
 
+
+            //permiterea drag&drop-ului
             this.AllowDrop = true;
             this.DragEnter += DropboxForm_DragEnter;
             this.DragDrop += DropboxForm_DragDrop;
@@ -55,14 +61,17 @@ namespace Dropbox
 
         private async void DropboxForm_DragDrop(object sender, DragEventArgs e)
         {
+
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
+            //uploadare fisier (parcuge fiecare fisier care trebuie uploadat)
             foreach(string file in files)
             {
                 await UploadFileToServer(file);
             }
 
             MessageBox.Show("Fișierele au fost încarcate cu succes");
+            //afisare fisiere noi
             await LoadUserFilesAsync();
         }
 
@@ -70,9 +79,14 @@ namespace Dropbox
         {
             try
             {
+                //obtinere fisiere utilizatr
                 var files = await _facade.GetUserFiles(_currentUser.Id);
+
+                //curatare a listei pentru afisarea noua
                 listView1.Items.Clear();
 
+
+                //iteratie pentru afisarea fisierelor
                 foreach(var file in files)
                 {
                     var item = new ListViewItem(file.FileName);
@@ -91,6 +105,7 @@ namespace Dropbox
         {
             using (var client = new HttpClient())
             {
+                //transformare in fisier json pentru a putea transmite la server
                 var payload = JsonSerializer.Serialize(new
                 {
                     UserId = _currentUser.Id,
@@ -123,7 +138,7 @@ namespace Dropbox
                                           "Confirmare ștergere",
                                           MessageBoxButtons.YesNo,
                                           MessageBoxIcon.Warning);
-
+            
             if (confirm == DialogResult.Yes)
             {
                 await _facade.DeleteFile(_currentUser.Id,fileName);
@@ -138,7 +153,7 @@ namespace Dropbox
 
             var selectedItem = listView1.SelectedItems[0];
             string fileName = selectedItem.Text;
-
+            //afisare locatie descarcare a fisierlui
             using (SaveFileDialog sfd = new SaveFileDialog { FileName = fileName })
             {
                 if (sfd.ShowDialog() == DialogResult.OK)

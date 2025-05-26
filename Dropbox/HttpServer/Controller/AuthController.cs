@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using BusinessLogic;
 using CommonModels;
 
+//Autor Mihnea Andrei
 namespace HttpServer.Controller
 {
     public class AuthController

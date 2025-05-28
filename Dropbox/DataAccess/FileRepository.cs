@@ -14,12 +14,12 @@ namespace DataAccess
 {
     public class FileRepository
     {
-        private readonly string _bucketName = "dropbox-961a8.firebasestorage.app";
+        private readonly string _bucketName = "insert_the_bucketName";
         private readonly StorageClient _storageClient;
 
         public FileRepository()
         {
-            var credentialPath = @"C:\Users\1\Downloads\dropbox-961a8-firebase-adminsdk-fbsvc-bacbe78e8e.json";
+            var credentialPath = @"insert_key_for_db";
             var credential = GoogleCredential.FromFile(credentialPath);
             _storageClient = StorageClient.Create(credential);
         }
